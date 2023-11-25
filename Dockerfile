@@ -2,10 +2,10 @@ FROM golang:1.20
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY src/go.mod src/go.sum ./
 RUN go mod download
 
-COPY *.go ./
+COPY src/*.go ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /fresheggs
 
