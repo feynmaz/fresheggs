@@ -1,0 +1,76 @@
+openapi: 3.0.0
+info:
+  title: fresheggs
+  description: Buy fresh eggs
+  version: 1.0.0
+
+paths:
+  /products:
+    get:
+      summary: Get all products
+      description: Get all products
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSummary'
+        '500':
+          description: Internal server error
+                  
+  /product/{product_id}:
+    get:
+      summary: Get a product by ID
+      description: Retrieve product details by ID
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    ProductSummary:
+      type: object
+      properties:
+        product_id:
+          type: string
+          description: ID of the product
+        product_name:
+          type: string
+          description: Name of the product
+        price:
+          type: number
+          format: double
+          description: Price of the product
+        stock_quantity:
+          type: integer
+          description: Stock quantity
+      required:
+        - product_id
+        - product_name
+        - price
+        - stock_quantity
+      
+    Product:
+      allOf:
+        - $ref: '#/components/schemas/ProductSummary'
+        - type: object
+          properties:
+            description:
+              type: string
+              description: Description of the product
