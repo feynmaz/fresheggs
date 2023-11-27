@@ -10,7 +10,7 @@ type ProductStorage interface {
 	GetOne(ctx context.Context, id string) (*entity.Product, error)
 	GetAll(ctx context.Context, limit, offset int) ([]*entity.Product, error)
 	Create(ctx context.Context, product entity.Product) (string, error)
-	Update(ctx context.Context, product entity.Product) (*entity.Product, error)
+	Update(ctx context.Context, id string, product entity.Product) (*entity.Product, error)
 	Delete(ctx context.Context, productId string) error
 }
 
@@ -36,8 +36,8 @@ func (s *productService) CreateProduct(ctx context.Context, product entity.Produ
 	return s.storage.Create(ctx, product)
 }
 
-func (s *productService) UpdateProduct(ctx context.Context, product entity.Product) (*entity.Product, error) {
-	return s.storage.Update(ctx, product)
+func (s *productService) UpdateProduct(ctx context.Context, id string, product entity.Product) (*entity.Product, error) {
+	return s.storage.Update(ctx, id, product)
 }
 
 func (s *productService) DeleteProduct(ctx context.Context, productId string) error {
