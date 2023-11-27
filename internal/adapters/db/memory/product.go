@@ -40,7 +40,6 @@ func (p *productsStorage) GetAll(ctx context.Context, limit, offset int) ([]*ent
 }
 
 func (p *productsStorage) Create(ctx context.Context, product entity.Product) (string, error) {
-	// TODO: pass product without ID
 	productId := uuid.New().String()
 	p.mu.Lock()
 	p.products[productId] = &product
