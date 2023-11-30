@@ -10,12 +10,13 @@ import (
 )
 
 const (
-	getProductURL  = "/product/:product_id"
+	getProductURL  = "/product/{productId}"
 	getProductsURL = "/products"
 )
 
 type ProductUsecase interface {
 	GetProducts(ctx context.Context, limit, offset int) ([]*entity.Product, error)
+	GetProduct(ctx context.Context, productId string) (*entity.Product, error)
 }
 
 type productHandler struct {
@@ -29,8 +30,15 @@ func NewProductHandler(productUsecase ProductUsecase) *productHandler {
 }
 
 func (h *productHandler) Register(router chi.Router) {
-	// router.Get(getProductURL, nil)
+	router.Get(getProductURL, h.GetProduct)
 	router.Get(getProductsURL, h.GetAllProducts)
+}
+
+func (h *productHandler) GetProduct(w http.ResponseWriter, r *http.Request) {
+	productId := chi.URLParam(r, "productId")
+	product, _ := h.productUsecase.GetProduct(r.Context(), productId)
+	reponseBody, _ := json.Marshal(product)
+	w.Write(reponseBody)
 }
 
 func (h *productHandler) GetAllProducts(w http.ResponseWriter, r *http.Request) {

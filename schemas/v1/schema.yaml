@@ -1,35 +1,37 @@
 openapi: 3.0.0
 info:
-  title: fresheggs
-  description: Buy fresh eggs
+  title: Fresheggs
+  description: Buy fresh eggs here
   version: 1.0.0
 
 paths:
   /products:
     get:
-      summary: Get all products
-      description: Get all products
+      summary: Get list of products
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductSummary'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductSummary'
+        '400':
+          description: Bad request
         '500':
           description: Internal server error
-                  
+
   /product/{product_id}:
+    parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+
     get:
-      summary: Get a product by ID
-      description: Retrieve product details by ID
-      parameters:
-        - name: product_id
-          in: path
-          required: true
-          description: ID of the product
-          schema:
-            type: string
+      summary: Get product by ID
       responses:
         '200':
           description: Successful response
@@ -37,35 +39,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
-        '404':
-          description: Product not found
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete product by ID
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
+    patch:
+      summary: Update product by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductPatch'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad request
+        '422':
+          description: Unprocessable Entity
         '500':
           description: Internal server error
 
 components:
   schemas:
-    ProductSummary:
+    
+    _ProductBase:
       type: object
       properties:
-        product_id:
+        name:
           type: string
-          description: ID of the product
-        product_name:
-          type: string
-          description: Name of the product
         price:
           type: number
-          format: double
-          description: Price of the product
         stock_quantity:
           type: integer
-          description: Stock quantity
-      required:
-        - product_id
-        - product_name
-        - price
-        - stock_quantity
-      
+  
+    ProductSummary:
+      allOf:
+        - $ref: '#/components/schemas/_ProductBase'
+        - type: object
+          properties:
+            product_id:
+              type: string
+              
+    ProductPatch:
+      allOf:
+        - $ref: '#/components/schemas/_ProductBase'
+        - type: object
+          properties:
+            description:
+              type: string
+
     Product:
       allOf:
         - $ref: '#/components/schemas/ProductSummary'
@@ -73,4 +112,4 @@ components:
           properties:
             description:
               type: string
-              description: Description of the product
+
