@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/feynmaz/fresheggs/internal/domain/entity"
-	"github.com/google/uuid"
 )
 
 type productsStorage struct {
@@ -40,11 +39,10 @@ func (p *productsStorage) GetAll(ctx context.Context, limit, offset int) ([]*ent
 }
 
 func (p *productsStorage) Create(ctx context.Context, product entity.Product) (string, error) {
-	productId := uuid.New().String()
 	p.mu.Lock()
-	p.products[productId] = &product
+	p.products[product.ProductId] = &product
 	p.mu.Unlock()
-	return productId, nil
+	return product.ProductId, nil
 }
 
 func (p *productsStorage) Update(ctx context.Context, productId string, product entity.Product) (*entity.Product, error) {

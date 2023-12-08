@@ -14,6 +14,13 @@ type Service interface {
 	DeleteProduct(ctx context.Context, productId string) error
 }
 
+type ProductPatch interface {
+	GetDescription() string
+	GetName() string
+	GetPrice() float32
+	GetStockQuantity() int
+}
+
 type productUsecase struct {
 	productService Service
 }
@@ -24,8 +31,9 @@ func NewProductUsecase(productService Service) *productUsecase {
 	}
 }
 
-func (u *productUsecase) CreateProduct(ctx context.Context, name, description string, price float32) (string, error) {
+func (u *productUsecase) CreateProduct(ctx context.Context, productId, name, description string, price float32) (string, error) {
 	product := entity.Product{
+		ProductId:   productId,
 		Name:        name,
 		Description: description,
 		Price:       price,
@@ -39,4 +47,32 @@ func (u *productUsecase) GetProducts(ctx context.Context, limit, offset int) ([]
 
 func (u *productUsecase) GetProduct(ctx context.Context, id string) (*entity.Product, error) {
 	return u.productService.GetProduct(ctx, id)
+}
+
+func (u *productUsecase) UpdateProduct(ctx context.Context, productId string, productPatch ProductPatch) (*entity.Product, error) {
+	currentProduct, _ := u.productService.GetProduct(ctx, productId)
+	updatedProduct := entity.Product{
+		ProductId:   currentProduct.ProductId,
+		Name:        currentProduct.Name,
+		Description: currentProduct.Description,
+		Price:       currentProduct.Price,
+	}
+
+	if productPatch.GetDescription() != "" {
+		updatedProduct.Description = productPatch.GetDescription()
+	}
+
+	if productPatch.GetName() != "" {
+		updatedProduct.Name = productPatch.GetName()
+	}
+
+	if productPatch.GetPrice() != 0 {
+		updatedProduct.Price = productPatch.GetPrice()
+	}
+
+	return u.productService.UpdateProduct(ctx, productId, updatedProduct)
+}
+
+func (u *productUsecase) DeleteProduct(ctx context.Context, productId string) error {
+	return u.productService.DeleteProduct(ctx, productId)
 }
