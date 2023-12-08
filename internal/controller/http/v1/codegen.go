@@ -20,8 +20,8 @@ type Product struct {
 	StockQuantity *int     `json:"stock_quantity,omitempty"`
 }
 
-// ProductPatch defines model for ProductPatch.
-type ProductPatch struct {
+// ProductCreate defines model for ProductCreate.
+type ProductCreate struct {
 	Description   *string  `json:"description,omitempty"`
 	Name          *string  `json:"name,omitempty"`
 	Price         *float32 `json:"price,omitempty"`
@@ -43,11 +43,17 @@ type ProductBase struct {
 	StockQuantity *int     `json:"stock_quantity,omitempty"`
 }
 
+// PostProductJSONRequestBody defines body for PostProduct for application/json ContentType.
+type PostProductJSONRequestBody = ProductCreate
+
 // PatchProductProductIdJSONRequestBody defines body for PatchProductProductId for application/json ContentType.
-type PatchProductProductIdJSONRequestBody = ProductPatch
+type PatchProductProductIdJSONRequestBody = ProductCreate
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Create product
+	// (POST /product)
+	PostProduct(w http.ResponseWriter, r *http.Request)
 	// Delete product by ID
 	// (DELETE /product/{product_id})
 	DeleteProductProductId(w http.ResponseWriter, r *http.Request, productId string)
@@ -65,6 +71,12 @@ type ServerInterface interface {
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// Create product
+// (POST /product)
+func (_ Unimplemented) PostProduct(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // Delete product by ID
 // (DELETE /product/{product_id})
@@ -98,6 +110,21 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// PostProduct operation middleware
+func (siw *ServerInterfaceWrapper) PostProduct(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostProduct(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
 
 // DeleteProductProductId operation middleware
 func (siw *ServerInterfaceWrapper) DeleteProductProductId(w http.ResponseWriter, r *http.Request) {
@@ -305,6 +332,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/product", wrapper.PostProduct)
+	})
 	r.Group(func(r chi.Router) {
 		r.Delete(options.BaseURL+"/product/{product_id}", wrapper.DeleteProductProductId)
 	})

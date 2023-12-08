@@ -15,7 +15,7 @@ type Service interface {
 	DeleteProduct(ctx context.Context, productId string) error
 }
 
-type ProductPatch interface {
+type ProductCreate interface {
 	GetDescription() string
 	GetName() string
 	GetPrice() float32
@@ -32,15 +32,15 @@ func NewProductUsecase(productService Service) *productUsecase {
 	}
 }
 
-func (u *productUsecase) CreateProduct(ctx context.Context, productId, name, description string, price float32) (string, error) {
+func (u *productUsecase) CreateProduct(ctx context.Context, productId string, productCreate ProductCreate) (string, error) {
 	if productId == "" {
 		productId = uuid.New().String()
 	}
 	product := entity.Product{
 		ProductId:   productId,
-		Name:        name,
-		Description: description,
-		Price:       price,
+		Name:        productCreate.GetName(),
+		Description: productCreate.GetDescription(),
+		Price:       productCreate.GetPrice(),
 	}
 	return u.productService.CreateProduct(ctx, product)
 }
@@ -53,7 +53,7 @@ func (u *productUsecase) GetProduct(ctx context.Context, id string) (*entity.Pro
 	return u.productService.GetProduct(ctx, id)
 }
 
-func (u *productUsecase) UpdateProduct(ctx context.Context, productId string, productPatch ProductPatch) (*entity.Product, error) {
+func (u *productUsecase) UpdateProduct(ctx context.Context, productId string, productPatch ProductCreate) (*entity.Product, error) {
 	currentProduct, _ := u.productService.GetProduct(ctx, productId)
 	updatedProduct := entity.Product{
 		ProductId:   currentProduct.ProductId,

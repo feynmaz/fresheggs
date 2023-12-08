@@ -22,6 +22,29 @@ paths:
         '500':
           description: Internal server error
 
+  /product:
+    post:
+      summary: Create product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad request
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal server error
+  
   /product/{product_id}:
     parameters:
       - name: product_id
@@ -61,7 +84,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProductPatch'
+              $ref: '#/components/schemas/ProductCreate'
       responses:
         '200':
           description: Successful response
@@ -97,14 +120,14 @@ components:
             product_id:
               type: string
               
-    ProductPatch:
+    ProductCreate:
       allOf:
         - $ref: '#/components/schemas/_ProductBase'
         - type: object
           properties:
             description:
               type: string
-
+              
     Product:
       allOf:
         - $ref: '#/components/schemas/ProductSummary'

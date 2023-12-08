@@ -19,8 +19,6 @@ func main() {
 	productUsecase := product.NewProductUsecase(productService)
 
 	ctx := context.Background()
-	productUsecase.CreateProduct(ctx, "b219ce17-5cf1-4bd3-9cee-be82e198d355", "chicken egg", "egg of a chicken", 0.1)
-	productUsecase.CreateProduct(ctx, "951ae990-e418-4e51-bbbc-cf4fde17de45", "quail egg", "egg of a quail", 0.08)
 
 	products, _ := productUsecase.GetProducts(ctx, 10, 0)
 	fmt.Println(products)

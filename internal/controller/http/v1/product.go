@@ -14,8 +14,8 @@ import (
 type ProductUsecase interface {
 	GetProducts(ctx context.Context, limit, offset int) ([]*entity.Product, error)
 	GetProduct(ctx context.Context, productId string) (*entity.Product, error)
-	CreateProduct(ctx context.Context, productId, name, description string, price float32) (string, error)
-	UpdateProduct(ctx context.Context, productId string, updatedProduct product.ProductPatch) (*entity.Product, error)
+	CreateProduct(ctx context.Context, productId string, productCreate product.ProductCreate) (string, error)
+	UpdateProduct(ctx context.Context, productId string, updatedProduct product.ProductCreate) (*entity.Product, error)
 	DeleteProduct(ctx context.Context, productId string) error
 }
 
@@ -58,7 +58,7 @@ func (h *productHandler) GetProductProductId(w http.ResponseWriter, r *http.Requ
 // Update product by ID
 // (PATCH /product/{product_id})
 func (h *productHandler) PatchProductProductId(w http.ResponseWriter, r *http.Request, productId string) {
-	var productPatch ProductPatch
+	var productPatch ProductCreate
 	body, _ := io.ReadAll(r.Body)
 	_ = json.Unmarshal(body, &productPatch)
 
@@ -87,4 +87,24 @@ func (h *productHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	WriteJson(w, productsSummary)
+}
+
+// Create product
+// (POST /product)
+func (h *productHandler) PostProduct(w http.ResponseWriter, r *http.Request) {
+	var productCreate ProductCreate
+	body, _ := io.ReadAll(r.Body)
+	_ = json.Unmarshal(body, &productCreate)
+
+	productId, _ := h.productUsecase.CreateProduct(r.Context(), "", productCreate)
+	
+	responseProduct := Product{
+		Description: productCreate.Description,
+		Name: productCreate.Name,
+		Price: productCreate.Price,
+		ProductId: &productId,
+		StockQuantity: productCreate.StockQuantity,
+	}
+
+	WriteJson(w, responseProduct)
 }
