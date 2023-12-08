@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/feynmaz/fresheggs/internal/domain/entity"
+	"github.com/google/uuid"
 )
 
 type Service interface {
@@ -32,6 +33,9 @@ func NewProductUsecase(productService Service) *productUsecase {
 }
 
 func (u *productUsecase) CreateProduct(ctx context.Context, productId, name, description string, price float32) (string, error) {
+	if productId == "" {
+		productId = uuid.New().String()
+	}
 	product := entity.Product{
 		ProductId:   productId,
 		Name:        name,
