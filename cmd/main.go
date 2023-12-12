@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/feynmaz/fresheggs/config"
 	"github.com/feynmaz/fresheggs/internal/adapters/db/memory"
 	v1 "github.com/feynmaz/fresheggs/internal/controller/http/v1"
 	"github.com/feynmaz/fresheggs/internal/domain/service"
@@ -14,6 +16,12 @@ import (
 )
 
 func main() {
+	cfg, err := config.GetDefault()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(cfg)
+
 	serviceStorage := memory.NewProductStorage()
 	productService := service.NewProductService(serviceStorage)
 	productUsecase := product.NewProductUsecase(productService)
@@ -32,5 +40,5 @@ func main() {
 	productHandlerV1 := v1.NewProductHandler(productUsecase)
 	productHandlerV1.Register(router)
 
-	http.ListenAndServe(":8080", router)
+	http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), router)
 }
