@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"sync"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -15,7 +15,7 @@ var (
 
 func GetDb(pgDsn string) (*sql.DB, error) {
 	once.Do(func() {
-		db, err = sql.Open("pgx", pgDsn)
+		db, err = sql.Open("postgres", pgDsn)
 		if err != nil {
 			return
 		}
