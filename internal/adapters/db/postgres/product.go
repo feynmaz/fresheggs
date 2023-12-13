@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/feynmaz/fresheggs/internal/domain/entity"
 )
@@ -21,7 +22,38 @@ func NewProductStorage(pgDsn string) (*productStorage, error) {
 }
 
 func (p productStorage) GetOne(ctx context.Context, id string) (*entity.Product, error) {
-	return nil, nil
+	//  If a function name includes Query, it is designed to ask a question of the database, and will return a set of rows
+	rows, err := db.Query(`
+select 
+	p.product_id ,
+	p."name" ,
+	p.description ,
+	i.price 
+from products p 
+inner join items i 
+on p.product_id = i.product_id 
+where 1=1
+and p.product_id = $1`, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var product entity.Product
+	count := 0
+	for rows.Next() {
+		if err = rows.Scan(&product); err != nil {
+			return nil, err
+		}
+		count++
+	}
+	if count == 0 {
+		return nil, fmt.Errorf("product with id=%s not found", id)
+	}
+	if err = rows.Err(); err != nil {
+		return &product, err
+	}
+	return &product, nil
 }
 
 func (p productStorage) GetAll(ctx context.Context, limit, offset int) ([]*entity.Product, error) {
