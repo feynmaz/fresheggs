@@ -24,8 +24,9 @@ func main() {
 	fmt.Println(cfg)
 
 	if cfg.DoMigrations {
-		err := migrations.Run(cfg.PgDsn)
-		fmt.Println(err.Error())
+		if err := migrations.Run(cfg.PgDsn); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	serviceStorage := memory.NewProductStorage()
