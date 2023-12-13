@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/feynmaz/fresheggs/config"
-	"github.com/feynmaz/fresheggs/internal/adapters/db/memory"
+	"github.com/feynmaz/fresheggs/internal/adapters/db/postgres"
 	v1 "github.com/feynmaz/fresheggs/internal/controller/http/v1"
 	"github.com/feynmaz/fresheggs/internal/domain/service"
 	"github.com/feynmaz/fresheggs/internal/domain/usecase/product"
@@ -17,19 +17,28 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	cfg, err := config.GetDefault()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	fmt.Println(cfg)
 
 	if cfg.DoMigrations {
 		if err := migrations.Run(cfg.PgDsn); err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
 
-	serviceStorage := memory.NewProductStorage()
+	serviceStorage, err := postgres.NewProductStorage(cfg.PgDsn)
+	if err != nil {
+		return err
+	}
 	productService := service.NewProductService(serviceStorage)
 	productUsecase := product.NewProductUsecase(productService)
 
@@ -47,5 +56,7 @@ func main() {
 	productHandlerV1 := v1.NewProductHandler(productUsecase)
 	productHandlerV1.Register(router)
 
+	log.Println("server is starting")
 	http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), router)
+	return nil
 }

@@ -13,9 +13,9 @@ var (
 	err  error
 )
 
-func GetDb() (*sql.DB, error) {
+func GetDb(pgDsn string) (*sql.DB, error) {
 	once.Do(func() {
-		db, err = sql.Open("pgx", "postgres://postgres:test@localhost:5432/postgres")
+		db, err = sql.Open("pgx", pgDsn)
 		if err != nil {
 			return
 		}

@@ -10,8 +10,8 @@ type productStorage struct {
 	db interface{}
 }
 
-func NewProductStorage() (*productStorage, error) {
-	db, err := GetDb()
+func NewProductStorage(pgDsn string) (*productStorage, error) {
+	db, err := GetDb(pgDsn)
 	if err != nil {
 		return nil, err
 	}
