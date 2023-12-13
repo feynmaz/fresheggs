@@ -14,7 +14,6 @@ var (
 )
 
 func GetDb() (*sql.DB, error) {
-	var err error
 	once.Do(func() {
 		db, err = sql.Open("pgx", "postgres://postgres:test@localhost:5432/postgres")
 		if err != nil {
@@ -27,7 +26,6 @@ func GetDb() (*sql.DB, error) {
 			db = nil
 			return
 		}
-
 	})
 
 	return db, err
