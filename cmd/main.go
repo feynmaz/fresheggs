@@ -11,6 +11,7 @@ import (
 	v1 "github.com/feynmaz/fresheggs/internal/controller/http/v1"
 	"github.com/feynmaz/fresheggs/internal/domain/service"
 	"github.com/feynmaz/fresheggs/internal/domain/usecase/product"
+	"github.com/feynmaz/fresheggs/migrations"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 )
@@ -21,6 +22,11 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println(cfg)
+
+	if cfg.DoMigrations {
+		err := migrations.Run(cfg.PgDsn)
+		fmt.Println(err.Error())
+	}
 
 	serviceStorage := memory.NewProductStorage()
 	productService := service.NewProductService(serviceStorage)

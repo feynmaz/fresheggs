@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	PgDsn string `env:"PG_DSN"`
-	Port  int    `env:"PORT"`
+	PgDsn        string `env:"PG_DSN"`
+	Port         int    `env:"PORT"`
+	DoMigrations bool   `env:"DO_MIGRATIONS"`
 }
 
 var (

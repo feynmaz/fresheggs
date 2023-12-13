@@ -1,0 +1,18 @@
+@startuml database schema
+entity products  {
+    * product_id : string <<generated>>
+    --
+    * name : string
+    description : string
+}
+
+entity items  {
+    * item_id : string <<generated>>
+    --
+    * product_id : string <<FK>>
+    price : float32
+    stock_quantity: int
+}
+
+
+Items }|-- Products
