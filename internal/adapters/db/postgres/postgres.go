@@ -1,21 +1,21 @@
 package postgres
 
 import (
-	"database/sql"
 	"sync"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
 var (
 	once sync.Once
-	db   *sql.DB
+	db   *sqlx.DB
 	err  error
 )
 
-func GetDb(pgDsn string) (*sql.DB, error) {
+func GetDb(pgDsn string) (*sqlx.DB, error) {
 	once.Do(func() {
-		db, err = sql.Open("postgres", pgDsn)
+		db, err = sqlx.Open("postgres", pgDsn)
 		if err != nil {
 			return
 		}

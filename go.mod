@@ -8,6 +8,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/google/uuid v1.4.0
 	github.com/jackc/pgx/v5 v5.5.1
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.9
 	github.com/oapi-codegen/runtime v1.1.0
 	github.com/rubenv/sql-migrate v1.5.2
