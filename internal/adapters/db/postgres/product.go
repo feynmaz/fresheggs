@@ -128,5 +128,16 @@ func (p productStorage) Update(ctx context.Context, id string, product entity.Pr
 }
 
 func (p productStorage) Delete(ctx context.Context, productId string) error {
+	deleteProduct := `
+	delete from products 
+	where product_id = :product_id 
+	`
+	_, err := p.db.NamedExec(deleteProduct, map[string]interface{}{
+		"product_id":     productId,
+	})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
