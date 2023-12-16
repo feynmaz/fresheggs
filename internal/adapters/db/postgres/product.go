@@ -5,10 +5,12 @@ import (
 	"fmt"
 
 	"github.com/feynmaz/fresheggs/internal/domain/entity"
+	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 )
 
 type productStorage struct {
-	db interface{}
+	db *sqlx.DB
 }
 
 func NewProductStorage(pgDsn string) (*productStorage, error) {
@@ -22,7 +24,6 @@ func NewProductStorage(pgDsn string) (*productStorage, error) {
 }
 
 func (p productStorage) GetOne(ctx context.Context, id string) (*entity.Product, error) {
-	//  If a function name includes Query, it is designed to ask a question of the database, and will return a set of rows
 	selectProductById := fmt.Sprintf(`
 	select 
 		p.product_id ,
@@ -36,7 +37,7 @@ func (p productStorage) GetOne(ctx context.Context, id string) (*entity.Product,
 	and p.product_id = '%s'`, id)
 
 	product := entity.Product{}
-	err := db.Get(&product, selectProductById)
+	err := p.db.Get(&product, selectProductById)
 	if err != nil {
 		return &product, err
 	}
@@ -49,7 +50,32 @@ func (p productStorage) GetAll(ctx context.Context, limit, offset int) ([]*entit
 }
 
 func (p productStorage) Create(ctx context.Context, product entity.Product) (string, error) {
-	return "", nil
+	createProduct := `insert into products (product_id, name, description) values (:product_id, :name, :description)`
+	createItem := `insert into items (item_id, product_id, price, stock_quantity) values (:item_id, :product_id, :price, :stock_quantity) 
+	on conflict on constraint items_un_product_id 
+	do update set stock_quantity = items.stock_quantity + 1`
+
+	_, err := p.db.NamedExec(createProduct, map[string]interface{}{
+		"product_id":  product.ProductId,
+		"name":        product.Name,
+		"description": product.Description,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	itemId := uuid.New().String()
+	_, err = p.db.NamedExec(createItem, map[string]interface{}{
+		"item_id":        itemId,
+		"product_id":     product.ProductId,
+		"price":          product.Price,
+		"stock_quantity": 1,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return product.ProductId, nil
 }
 
 func (p productStorage) Update(ctx context.Context, id string, product entity.Product) (*entity.Product, error) {
