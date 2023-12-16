@@ -86,7 +86,7 @@ func (p productStorage) Create(ctx context.Context, product entity.Product) (str
 		"item_id":        itemId,
 		"product_id":     product.ProductId,
 		"price":          product.Price,
-		"stock_quantity": 1,
+		"stock_quantity": product.StockQuantity,
 	})
 	if err != nil {
 		return "", err
@@ -118,7 +118,7 @@ func (p productStorage) Update(ctx context.Context, id string, product entity.Pr
 	_, err = p.db.NamedExec(updateItem, map[string]interface{}{
 		"product_id":     product.ProductId,
 		"price":          product.Price,
-		"stock_quantity": 0,
+		"stock_quantity": product.StockQuantity,
 	})
 	if err != nil {
 		return nil, err

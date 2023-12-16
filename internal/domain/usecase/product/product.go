@@ -37,10 +37,11 @@ func (u *productUsecase) CreateProduct(ctx context.Context, productId string, pr
 		productId = uuid.New().String()
 	}
 	product := entity.Product{
-		ProductId:   productId,
-		Name:        productCreate.GetName(),
-		Description: productCreate.GetDescription(),
-		Price:       productCreate.GetPrice(),
+		ProductId:     productId,
+		Name:          productCreate.GetName(),
+		Description:   productCreate.GetDescription(),
+		Price:         productCreate.GetPrice(),
+		StockQuantity: productCreate.GetStockQuantity(),
 	}
 	return u.productService.CreateProduct(ctx, product)
 }
