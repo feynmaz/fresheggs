@@ -46,7 +46,24 @@ func (p productStorage) GetOne(ctx context.Context, id string) (*entity.Product,
 }
 
 func (p productStorage) GetAll(ctx context.Context, limit, offset int) ([]*entity.Product, error) {
-	return nil, nil
+	selectAllProducts := `
+	select 
+		p.product_id ,
+		p."name" ,
+		i.price 
+	from products p 
+	inner join items i 
+	on p.product_id = i.product_id 
+	where 1=1
+	`
+
+	products := []*entity.Product{}
+	err := p.db.Select(&products, selectAllProducts)
+	if err != nil {
+		return products, err
+	}
+
+	return products, nil
 }
 
 func (p productStorage) Create(ctx context.Context, product entity.Product) (string, error) {
