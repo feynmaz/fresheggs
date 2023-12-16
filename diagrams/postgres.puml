@@ -15,4 +15,4 @@ entity items  {
 }
 
 
-Items }|-- Products
+items }|-- products
