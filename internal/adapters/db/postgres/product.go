@@ -96,7 +96,35 @@ func (p productStorage) Create(ctx context.Context, product entity.Product) (str
 }
 
 func (p productStorage) Update(ctx context.Context, id string, product entity.Product) (*entity.Product, error) {
-	return nil, nil
+	updateProduct := `
+	update products 
+	set "name"=:name, description=:description
+	where product_id = :product_id
+	`
+	_, err := p.db.NamedExec(updateProduct, map[string]interface{}{
+		"product_id":  product.ProductId,
+		"name":        product.Name,
+		"description": product.Description,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	updateItem := `
+	update items
+	set price=:price, stock_quantity=:stock_quantity
+	where product_id = :product_id
+	`
+	_, err = p.db.NamedExec(updateItem, map[string]interface{}{
+		"product_id":     product.ProductId,
+		"price":          product.Price,
+		"stock_quantity": 0,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &product, nil
 }
 
 func (p productStorage) Delete(ctx context.Context, productId string) error {
