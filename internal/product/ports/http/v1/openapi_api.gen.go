@@ -11,44 +11,6 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
-// Product defines model for Product.
-type Product struct {
-	Description   *string  `json:"description,omitempty"`
-	Name          *string  `json:"name,omitempty"`
-	Price         *float32 `json:"price,omitempty"`
-	ProductId     *string  `json:"product_id,omitempty"`
-	StockQuantity *int     `json:"stock_quantity,omitempty"`
-}
-
-// ProductCreate defines model for ProductCreate.
-type ProductCreate struct {
-	Description   *string  `json:"description,omitempty"`
-	Name          *string  `json:"name,omitempty"`
-	Price         *float32 `json:"price,omitempty"`
-	StockQuantity *int     `json:"stock_quantity,omitempty"`
-}
-
-// ProductSummary defines model for ProductSummary.
-type ProductSummary struct {
-	Name          *string  `json:"name,omitempty"`
-	Price         *float32 `json:"price,omitempty"`
-	ProductId     *string  `json:"product_id,omitempty"`
-	StockQuantity *int     `json:"stock_quantity,omitempty"`
-}
-
-// ProductBase defines model for _ProductBase.
-type ProductBase struct {
-	Name          *string  `json:"name,omitempty"`
-	Price         *float32 `json:"price,omitempty"`
-	StockQuantity *int     `json:"stock_quantity,omitempty"`
-}
-
-// PostProductJSONRequestBody defines body for PostProduct for application/json ContentType.
-type PostProductJSONRequestBody = ProductCreate
-
-// PatchProductProductIdJSONRequestBody defines body for PatchProductProductId for application/json ContentType.
-type PatchProductProductIdJSONRequestBody = ProductCreate
-
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Create product

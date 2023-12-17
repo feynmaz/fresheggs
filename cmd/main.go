@@ -1,16 +1,15 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/feynmaz/fresheggs/config"
-	"github.com/feynmaz/fresheggs/internal/adapters/db/postgres"
-	v1 "github.com/feynmaz/fresheggs/internal/controller/http/v1"
-	"github.com/feynmaz/fresheggs/internal/domain/service"
-	"github.com/feynmaz/fresheggs/internal/domain/usecase/product"
+	"github.com/feynmaz/fresheggs/internal/product/adapters"
+	"github.com/feynmaz/fresheggs/internal/product/app"
+	v1 "github.com/feynmaz/fresheggs/internal/product/ports/http/v1"
+
 	"github.com/feynmaz/fresheggs/migrations"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -35,17 +34,13 @@ func run() error {
 		}
 	}
 
-	serviceStorage, err := postgres.NewProductStorage(cfg.PgDsn)
+	// product
+	postgresRepo, err := adapters.NewProductPgRepository(cfg.PgDsn)
 	if err != nil {
 		return err
 	}
-	productService := service.NewProductService(serviceStorage)
-	productUsecase := product.NewProductUsecase(productService)
 
-	ctx := context.Background()
-
-	products, _ := productUsecase.GetProducts(ctx, 10, 0)
-	fmt.Println(products)
+	productService := app.NewProductService(postgresRepo)
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
@@ -53,7 +48,7 @@ func run() error {
 		w.Write([]byte("Buy fresh eggs here!"))
 	})
 
-	productHandlerV1 := v1.NewProductHandler(productUsecase)
+	productHandlerV1 := v1.NewProductHandler(productService)
 	productHandlerV1.Register(router)
 
 	log.Println("server is starting")
