@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/feynmaz/fresheggs/config"
+	"github.com/feynmaz/fresheggs/internal/common/logs"
 	"github.com/feynmaz/fresheggs/internal/product/adapters"
 	"github.com/feynmaz/fresheggs/internal/product/app"
 	v1 "github.com/feynmaz/fresheggs/internal/product/ports/http/v1"
@@ -13,11 +13,12 @@ import (
 	"github.com/feynmaz/fresheggs/migrations"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
 	if err := run(); err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err)
 	}
 }
 
@@ -26,7 +27,8 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(cfg)
+	logs.InitLogger(cfg.LogLevel)
+	log.Debug().Msg(cfg.String())
 
 	if cfg.DoMigrations {
 		if err := migrations.Run(cfg.PgDsn); err != nil {
@@ -51,7 +53,7 @@ func run() error {
 	productHandlerV1 := v1.NewProductHandler(productService)
 	productHandlerV1.Register(router)
 
-	log.Println("server is starting")
+	log.Info().Msg("server is starting")
 	http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), router)
 	return nil
 }
