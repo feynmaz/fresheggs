@@ -5,6 +5,7 @@ package v1
 
 // Product defines model for Product.
 type Product struct {
+	Description   string  `json:"description"`
 	Name          string  `json:"name"`
 	Price         float64 `json:"price"`
 	ProductId     string  `json:"product_id"`
