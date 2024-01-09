@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/feynmaz/fresheggs/internal/adapter"
 	"github.com/feynmaz/fresheggs/internal/app"
 	v1 "github.com/feynmaz/fresheggs/internal/ports/http/v1"
 	"github.com/go-chi/chi/v5"
@@ -21,7 +22,8 @@ func run() error {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 
-	productService := app.NewProductService()
+	productRepo := adapter.NewMemoryProductRepo()
+	productService := app.NewProductService(productRepo)
 	routeHandlerV1 := v1.NewRouteHandler(productService)
 	routeHandlerV1.Register(router)
 

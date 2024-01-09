@@ -43,7 +43,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: '#/components/schemas/CreatedProductId'
         '400':
           description: Bad request
           content:
@@ -146,6 +146,11 @@ paths:
                 type: string
 components:
   schemas:
+    CreatedProductId:
+      type: object
+      properties:
+        product_id:
+          type: string
     ProductSummary:
       type: object
       required:
