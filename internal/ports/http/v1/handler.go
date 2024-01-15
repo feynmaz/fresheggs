@@ -34,7 +34,8 @@ func (h handler) PostProduct(w http.ResponseWriter, r *http.Request) {
 
 	p, err := h.productService.CreateProduct(r.Context(), productCreate)
 	if err != nil {
-		httptools.SendJSONResponse(w, http.StatusInternalServerError, err)
+		srvErr := httptools.ServerError(err)
+		httptools.SendJSONResponse(w, http.StatusInternalServerError, srvErr)
 		return
 	}
 	result := Product{
@@ -51,7 +52,8 @@ func (h handler) PostProduct(w http.ResponseWriter, r *http.Request) {
 // (DELETE /product/{product_id})
 func (h handler) DeleteProductProductId(w http.ResponseWriter, r *http.Request, productId string) {
 	if err := h.productService.DeleteProduct(r.Context(), productId); err != nil {
-		httptools.SendJSONResponse(w, http.StatusInternalServerError, err)
+		srvErr := httptools.ServerError(err)
+		httptools.SendJSONResponse(w, http.StatusInternalServerError, srvErr)
 		return
 	}
 	httptools.SendJSONResponse(w, http.StatusOK, productId)
@@ -63,10 +65,12 @@ func (h handler) GetProductProductId(w http.ResponseWriter, r *http.Request, pro
 	p, err := h.productService.GetProduct(r.Context(), productId)
 	if err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			httptools.SendJSONResponse(w, http.StatusNotFound, err)
+			clientErr := httptools.NotFoundErr(err)
+			httptools.SendJSONResponse(w, http.StatusNotFound, clientErr)
 			return
 		}
-		httptools.SendJSONResponse(w, http.StatusInternalServerError, err)
+		srvErr := httptools.ServerError(err)
+		httptools.SendJSONResponse(w, http.StatusInternalServerError, srvErr)
 		return
 	}
 	product := Product{
@@ -89,10 +93,12 @@ func (h handler) PatchProductProductId(w http.ResponseWriter, r *http.Request, p
 	p, err := h.productService.UpdateProduct(r.Context(), productId, productPatch)
 	if err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			httptools.SendJSONResponse(w, http.StatusNotFound, err)
+			clientErr := httptools.NotFoundErr(err)
+			httptools.SendJSONResponse(w, http.StatusNotFound, clientErr)
 			return
 		}
-		httptools.SendJSONResponse(w, http.StatusInternalServerError, err)
+		srvErr := httptools.ServerError(err)
+		httptools.SendJSONResponse(w, http.StatusInternalServerError, srvErr)
 		return
 	}
 	product := Product{
@@ -110,7 +116,8 @@ func (h handler) PatchProductProductId(w http.ResponseWriter, r *http.Request, p
 func (h handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	ps, err := h.productService.GetProducts(r.Context())
 	if err != nil {
-		httptools.SendJSONResponse(w, http.StatusInternalServerError, err)
+		srvErr := httptools.ServerError(err)
+		httptools.SendJSONResponse(w, http.StatusInternalServerError, srvErr)
 		return
 	}
 
