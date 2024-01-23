@@ -34,7 +34,7 @@ func NewProductPgRepository(pgDsn string) (*productPgRepository, error) {
 func (p productPgRepository) GetProduct(ctx context.Context, productId string) (product.Product, error) {
 	queryBuilder := p.pgSqlBuilder.Select("*").From("products").Where(sq.Eq{"product_id": productId})
 	query, args, _ := queryBuilder.ToSql()
-	row := p.conn.QueryRow(context.Background(), query, args...)
+	row := p.conn.QueryRow(ctx, query, args...)
 
 	var result Product
 	err := row.Scan(&result.ProductId, &result.Name, &result.Description, &result.Price, &result.Quantity)
@@ -62,7 +62,6 @@ func (p productPgRepository) CreateProduct(ctx context.Context, product product.
 		ToSql()
 
 	_, err := p.conn.Exec(ctx, query, args...)
-
 	if err != nil {
 		return err
 	}
@@ -71,6 +70,14 @@ func (p productPgRepository) CreateProduct(ctx context.Context, product product.
 }
 
 func (p productPgRepository) DeleteProduct(ctx context.Context, productId string) error {
+	queryBuilder := p.pgSqlBuilder.Delete("products").Where(sq.Eq{"product_id": productId})
+	query, args, _ := queryBuilder.ToSql()
+
+	_, err := p.conn.Exec(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
