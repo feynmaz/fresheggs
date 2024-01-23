@@ -32,22 +32,21 @@ func NewProductPgRepository(pgDsn string) (*productPgRepository, error) {
 }
 
 func (p productPgRepository) GetProduct(ctx context.Context, productId string) (product.Product, error) {
-	products := p.pgSqlBuilder.Select("*").From("products").Join("items USING (product_id)")
-	query, args, _ := products.Where(sq.Eq{"product_id": productId}).ToSql()
-
-	prod := product.Product{}
-	err := p.conn.QueryRow(ctx, query, args...).Scan(prod)
-
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return prod, product.ErrProductNotFound
-		}
-		return prod, err
-	}
-	return prod, nil
+	return product.Product{}, nil
 }
 
 func (p productPgRepository) CreateProduct(ctx context.Context, product product.Product) error {
+	query, args, _ := p.pgSqlBuilder.Insert("products").
+		Columns("product_id", "name", "description", "price", "stock_quantity").
+		Values(product.ProductId, product.Name, product.Description, product.Price, product.Quantity).
+		ToSql()
+
+	_, err := p.conn.Exec(ctx, query, args...)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -60,5 +59,31 @@ func (p productPgRepository) UpdateProduct(ctx context.Context, product product.
 }
 
 func (p productPgRepository) GetProducts(ctx context.Context) ([]product.Product, error) {
-	return nil, nil
+	queryBuilder := p.pgSqlBuilder.Select("*").From("products")
+	query, args, _ := queryBuilder.ToSql()
+
+	rows, err := p.conn.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []product.Product
+	for rows.Next() {
+		var result Product
+		err := rows.Scan(&result.ProductId, &result.Name, &result.Description, &result.Price, &result.Quantity)
+		if err != nil {
+			return nil, nil
+		}
+		prod := product.Product{
+			ProductId:   result.ProductId,
+			Name:        result.Name,
+			Description: result.Description,
+			Price:       result.Price,
+			Quantity:    result.Quantity,
+		}
+		products = append(products, prod)
+	}
+
+	return products, nil
 }
