@@ -9,6 +9,7 @@ import (
 	"github.com/feynmaz/fresheggs/internal/adapter"
 	"github.com/feynmaz/fresheggs/internal/app"
 	v1 "github.com/feynmaz/fresheggs/internal/ports/http/v1"
+	"github.com/feynmaz/fresheggs/migrations"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -21,6 +22,12 @@ func main() {
 
 func run() error {
 	cfg := config.GetDefault()
+
+	if cfg.DoMigrations {
+		if err := migrations.Run(cfg.PgDsn); err != nil {
+			return err
+		}
+	}
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
