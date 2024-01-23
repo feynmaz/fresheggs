@@ -32,7 +32,27 @@ func NewProductPgRepository(pgDsn string) (*productPgRepository, error) {
 }
 
 func (p productPgRepository) GetProduct(ctx context.Context, productId string) (product.Product, error) {
-	return product.Product{}, nil
+	queryBuilder := p.pgSqlBuilder.Select("*").From("products").Where(sq.Eq{"product_id": productId})
+	query, args, _ := queryBuilder.ToSql()
+	row := p.conn.QueryRow(context.Background(), query, args...)
+
+	var result Product
+	err := row.Scan(&result.ProductId, &result.Name, &result.Description, &result.Price, &result.Quantity)
+	if err == pgx.ErrNoRows {
+		return product.Product{}, fmt.Errorf("%w: %w", product.ErrProductNotFound, err)
+	}
+	if err != nil {
+		return product.Product{}, err
+	}
+	prod := product.Product{
+		ProductId:   result.ProductId,
+		Name:        result.Name,
+		Description: result.Description,
+		Price:       result.Price,
+		Quantity:    result.Quantity,
+	}
+
+	return prod, nil
 }
 
 func (p productPgRepository) CreateProduct(ctx context.Context, product product.Product) error {
