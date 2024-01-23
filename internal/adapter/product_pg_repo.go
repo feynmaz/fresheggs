@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/Masterminds/squirrel"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/feynmaz/fresheggs/internal/adapter/postgres"
 	"github.com/feynmaz/fresheggs/internal/domain/product"
@@ -81,7 +82,25 @@ func (p productPgRepository) DeleteProduct(ctx context.Context, productId string
 	return nil
 }
 
-func (p productPgRepository) UpdateProduct(ctx context.Context, product product.Product) error {
+func (p productPgRepository) UpdateProduct(ctx context.Context, prod product.Product) error {
+	queryBuilder := p.pgSqlBuilder.Update("products").
+		SetMap(squirrel.Eq{
+			"name":           prod.Name,
+			"description":    prod.Description,
+			"price":          prod.Price,
+			"stock_quantity": prod.Quantity,
+		}).
+		Where(squirrel.Eq{"product_id": prod.ProductId})
+	query, args, _ := queryBuilder.ToSql()
+
+	_, err := p.conn.Exec(ctx, query, args...)
+	if err == pgx.ErrNoRows {
+		return fmt.Errorf("%w: %w", product.ErrProductNotFound, err)
+	}
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
