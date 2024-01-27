@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/feynmaz/fresheggs/internal/domain/product"
+	"github.com/feynmaz/fresheggs/domain/product"
 )
 
 type MemoryProductRepo struct {

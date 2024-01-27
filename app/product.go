@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/feynmaz/fresheggs/internal/domain/product"
+	"github.com/feynmaz/fresheggs/domain/product"
 	"github.com/google/uuid"
 )
 

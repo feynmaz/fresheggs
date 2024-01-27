@@ -7,8 +7,8 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	sq "github.com/Masterminds/squirrel"
-	"github.com/feynmaz/fresheggs/internal/adapter/postgres"
-	"github.com/feynmaz/fresheggs/internal/domain/product"
+	"github.com/feynmaz/fresheggs/adapter/postgres"
+	"github.com/feynmaz/fresheggs/domain/product"
 	"github.com/jackc/pgx/v5"
 )
 

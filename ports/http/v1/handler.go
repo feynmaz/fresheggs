@@ -6,9 +6,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/feynmaz/fresheggs/internal/app"
-	httptools "github.com/feynmaz/fresheggs/internal/common/http"
-	"github.com/feynmaz/fresheggs/internal/domain/product"
+	"github.com/feynmaz/fresheggs/app"
+	httptools "github.com/feynmaz/fresheggs/common/http"
+	"github.com/feynmaz/fresheggs/domain/product"
 	"github.com/go-chi/chi/v5"
 )
 
