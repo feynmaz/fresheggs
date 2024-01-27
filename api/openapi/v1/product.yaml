@@ -1,0 +1,216 @@
+openapi: 3.0.0
+info:
+  title: Fresheggs
+  description: Buy fresh eggs here
+  version: 1.0.0
+paths:
+  /products:
+    get:
+      summary: Get list of products
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductSummary'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: string
+  /product:
+    post:
+      summary: Create product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedProductId'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+  /product/{product_id}:
+    parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get product by ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+    delete:
+      summary: Delete product by ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+    patch:
+      summary: Update product by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductPatch'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  schemas:
+    CreatedProductId:
+      type: object
+      properties:
+        product_id:
+          type: string
+    ProductSummary:
+      type: object
+      required:
+        - name
+        - price
+        - stock_quantity
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+        stock_quantity:
+          type: integer
+    Product:
+      type: object
+      required:
+        - name
+        - description
+        - price
+        - stock_quantity
+        - product_id
+      properties:
+        product_id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: double
+        stock_quantity:
+          type: integer
+    ProductCreate:
+      type: object
+      required:
+        - name
+        - price
+        - stock_quantity
+        - description
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+        stock_quantity:
+          type: integer
+        description:
+          type: string
+    ProductPatch:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+        stock_quantity:
+          type: integer
+        description:
+          type: string
