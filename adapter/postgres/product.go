@@ -1,4 +1,4 @@
-package adapter
+package postgres
 
 type Product struct {
 	ProductId   string  `db:"product_id"`
