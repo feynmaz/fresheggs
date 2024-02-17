@@ -13,9 +13,8 @@ var (
 	err  error
 )
 
-func GetDb(pgDsn string) (*pgx.Conn, error) {
+func GetDb(ctx context.Context, pgDsn string) (*pgx.Conn, error) {
 	once.Do(func() {
-		ctx := context.Background()
 		conn, err = pgx.Connect(ctx, pgDsn)
 		if err != nil {
 			return

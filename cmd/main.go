@@ -40,10 +40,10 @@ func run() error {
 	router.Use(metrics.GetMiddleware())
 	router.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{Registry: reg}))
 
-	productRepo, err := adapter.NewProductPgRepository(cfg.PgDsn)
-	if err != nil {
-		return err
-	}
+	productRepo := adapter.NewMemoryProductRepo()
+	// if err != nil {
+	// 	return err
+	// }
 	productService := app.NewProductService(productRepo)
 	routeHandlerV1 := v1.NewRouteHandler(productService)
 	routeHandlerV1.Register(router.With(middleware.Logger))
