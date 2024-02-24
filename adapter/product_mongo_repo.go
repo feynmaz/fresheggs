@@ -20,7 +20,7 @@ func NewMongoProductRepo(ctx context.Context, mongoURI string) (MongoProductRepo
 	if err != nil {
 		return MongoProductRepo{}, err
 	}
-	products := client.Database("freseggs").Collection("products")
+	products := client.Database("fresheggs").Collection("products")
 
 	return MongoProductRepo{
 		products: products,

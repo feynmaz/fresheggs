@@ -3,7 +3,6 @@ module github.com/feynmaz/fresheggs
 go 1.20
 
 require (
-	github.com/Masterminds/squirrel v1.5.4
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/google/uuid v1.4.0
 	github.com/jackc/pgx/v5 v5.5.2
@@ -11,6 +10,7 @@ require (
 	github.com/oapi-codegen/runtime v1.1.0
 	github.com/prometheus/client_golang v1.18.0
 	github.com/rubenv/sql-migrate v1.6.1
+	go.mongodb.org/mongo-driver v1.14.0
 )
 
 require (
@@ -23,8 +23,6 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
-	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
-	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
@@ -34,7 +32,6 @@ require (
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
-	go.mongodb.org/mongo-driver v1.14.0 // indirect
 	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect

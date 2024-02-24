@@ -12,7 +12,8 @@ type config struct {
 	Port         int    `envconfig:"PORT" default:"8080"`
 	LogLevel     string `envconfig:"LOG_LEVEL" default:"info"`
 	LogJson      bool   `envconfig:"LOG_JSON" default:"false"`
-	PgDsn        string `envconfig:"PG_DSN" required:"true"`
+	PgDsn        string `envconfig:"PG_DSN"`
+	MongoURI     string `envconfig:"MONGO_URI" required:"true"`
 	DoMigrations bool   `envconfig:"DO_MIGRATIONS" default:"false"`
 }
 
