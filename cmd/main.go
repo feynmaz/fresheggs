@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 	promtools "github.com/feynmaz/fresheggs/adapter/prometheus"
 	"github.com/feynmaz/fresheggs/app"
 	"github.com/feynmaz/fresheggs/config"
-	"github.com/feynmaz/fresheggs/migrations"
 	v1 "github.com/feynmaz/fresheggs/ports/http/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -27,12 +27,6 @@ func main() {
 func run() error {
 	cfg := config.GetDefault()
 
-	if cfg.DoMigrations {
-		if err := migrations.Run(cfg.PgDsn); err != nil {
-			return err
-		}
-	}
-
 	router := chi.NewRouter()
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
@@ -40,7 +34,8 @@ func run() error {
 	router.Use(metrics.GetMiddleware())
 	router.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{Registry: reg}))
 
-	productRepo, err := adapter.NewProductPgRepository(cfg.PgDsn)
+	ctx := context.Background()
+	productRepo, err := adapter.NewMongoProductRepo(ctx, cfg.MongoURI)
 	if err != nil {
 		return err
 	}
