@@ -1,0 +1,1 @@
+npx thirdweb@latest create --contract

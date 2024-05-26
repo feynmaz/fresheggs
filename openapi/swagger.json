@@ -1,0 +1,14 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Eggs shop on web3 technology",
+        "title": "Fresheggs API",
+        "contact": {
+            "name": "Nikolai Mazein",
+            "email": "feynmaz@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/",
+    "paths": {}
+}

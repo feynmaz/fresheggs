@@ -1,0 +1,10 @@
+basePath: /
+info:
+  contact:
+    email: feynmaz@gmail.com
+    name: Nikolai Mazein
+  description: Eggs shop on web3 technology
+  title: Fresheggs API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
