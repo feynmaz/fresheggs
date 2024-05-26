@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	AppName     string      `mapstructure:"app_name"`
 	LogLevel    int         `mapstructure:"log_level"`
 	Server      Server      `mapstructure:"server"`
 	EthClient   EthClient   `mapstructure:"eth_client"`

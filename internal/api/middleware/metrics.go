@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/feynmaz/fresheggs/internal/metrics"
@@ -24,6 +25,6 @@ func Metrics(next http.Handler) http.Handler {
 		next.ServeHTTP(&rec, r)
 
 		metrics.RequestsTotal.Inc()
-		metrics.StatusCodes.WithLabelValues(http.StatusText(rec.code)).Inc()
+		metrics.StatusCodes.WithLabelValues(fmt.Sprint(rec.code)).Inc()
 	})
 }
