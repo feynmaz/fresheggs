@@ -2,9 +2,11 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/feynmaz/fresheggs/internal/api"
 	"github.com/feynmaz/fresheggs/internal/config"
+	"github.com/feynmaz/fresheggs/internal/eth"
 	"github.com/feynmaz/fresheggs/internal/logger"
 )
 
@@ -20,7 +22,12 @@ func New(cfg *config.Config, log logger.Logger) (*Server, error) {
 		log: log,
 	}
 
-	s.api = api.New(*s.cfg, s.log)
+	ethClient, err := eth.NewClient(cfg.EthClient, log)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create eth client: %w", err)
+	}
+
+	s.api = api.New(*s.cfg, s.log, ethClient)
 
 	return &s, nil
 }

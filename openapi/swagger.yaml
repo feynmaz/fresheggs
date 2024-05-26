@@ -1,4 +1,21 @@
 basePath: /
+definitions:
+  api.ErrorResponse:
+    properties:
+      message:
+        type: string
+      requestId:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+  types.BlockNumber:
+    properties:
+      chain_name:
+        type: string
+      number:
+        type: string
+    type: object
 info:
   contact:
     email: feynmaz@gmail.com
@@ -6,5 +23,25 @@ info:
   description: Eggs shop on web3 technology
   title: Fresheggs API
   version: "1.0"
-paths: {}
+paths:
+  /eth/last_block:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.BlockNumber'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Get last sepolia block number
+      tags:
+      - get
 swagger: "2.0"

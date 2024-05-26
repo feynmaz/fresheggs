@@ -14,6 +14,7 @@ import (
 
 	"github.com/feynmaz/fresheggs/internal/api/middleware"
 	"github.com/feynmaz/fresheggs/internal/config"
+	"github.com/feynmaz/fresheggs/internal/eth"
 	"github.com/feynmaz/fresheggs/internal/logger"
 	_ "github.com/feynmaz/fresheggs/openapi" // OpenAPI docs.
 )
@@ -22,17 +23,21 @@ type API struct {
 	cfg config.Config
 	log logger.Logger
 
+	ethClient *eth.EthClient
+
 	router *chi.Mux
 }
 
 func New(
 	cfg config.Config,
 	log logger.Logger,
+	ethClient *eth.EthClient,
 ) *API {
 	api := API{
-		cfg:    cfg,
-		log:    log,
-		router: chi.NewRouter(),
+		cfg:       cfg,
+		log:       log,
+		ethClient: ethClient,
+		router:    chi.NewRouter(),
 	}
 
 	api.router.Use(middleware.RequestID)
@@ -88,4 +93,5 @@ func (api *API) registerEndpoints() {
 	))
 
 	// Application handlers.
+	api.router.Get("/eth/last_block", api.lastBlock)
 }

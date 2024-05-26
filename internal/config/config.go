@@ -20,7 +20,8 @@ type Server struct {
 }
 
 type EthClient struct {
-	Url string `mapstructure:"url"`
+	ChainName string `mapstructure:"chain_name"`
+	Url       string `mapstructure:"url"`
 }
 
 type Web3Account struct {
