@@ -93,5 +93,8 @@ func (api *API) registerEndpoints() {
 	))
 
 	// Application handlers.
-	api.router.Get("/eth/last_block", api.lastBlock)
+	api.router.Get("/eth/last_block", api.getLastBlock)
+
+	api.router.Post("/api/v1/product", api.createProduct)
+	api.router.Get("/api/v1/products", api.getProducts)
 }

@@ -18,6 +18,82 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/product": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "summary": "Create product",
+                "parameters": [
+                    {
+                        "description": "Create product",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.CreateProduct"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Product"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/products": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "get"
+                ],
+                "summary": "Get products",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.Product"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/eth/last_block": {
             "get": {
                 "produces": [
@@ -26,7 +102,7 @@ const docTemplate = `{
                 "tags": [
                     "get"
                 ],
-                "summary": "Get last sepolia block number",
+                "summary": "Get last eth block number",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -73,6 +149,40 @@ const docTemplate = `{
                 },
                 "number": {
                     "type": "string"
+                }
+            }
+        },
+        "types.CreateProduct": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                }
+            }
+        },
+        "types.Product": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "productId": {
+                    "type": "integer"
                 }
             }
         }
