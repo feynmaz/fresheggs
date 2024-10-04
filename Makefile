@@ -1,7 +1,7 @@
-# Format code with ngofumpt (https://github.com/mvdan/gofumpt).
-format:
-	gofumpt -w ./internal
+API_VERSION = v1
 
-# Run golangci-lint (https://github.com/golangci/golangci-lint).
-lint:
-	golangci-lint run ./internal/...
+.PHONY: generate-api
+generate-api:
+	oapi-codegen -package="$(API_VERSION)" -generate types -o internal/api/$(API_VERSION)/openapi_types.gen.go openapi/$(API_VERSION)/docs.yaml
+	oapi-codegen -package="$(API_VERSION)" -generate chi-server -o internal/api/$(API_VERSION)/openapi_api.gen.go openapi/$(API_VERSION)/docs.yaml
+	go mod tidy

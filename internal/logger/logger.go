@@ -15,7 +15,7 @@ func New() *Logger {
 	output := zerolog.ConsoleWriter{
 		Out:        os.Stdout,
 		TimeFormat: time.RFC3339,
-		NoColor:    false,
+		NoColor:    true,
 	}
 
 	logger := zerolog.New(output).With().Timestamp().Caller().Logger()

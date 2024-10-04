@@ -1,0 +1,53 @@
+openapi: 3.0.0
+info:
+  title: Fresheggs
+  description: Buy fresh eggs here
+  version: 1.0.0
+
+paths:
+  /product/{productID}:
+    get:
+      summary: Get product details by productID
+      description: Returns the details of a specific product.
+      operationId: getProductById
+      parameters:
+        - name: productID
+          in: path
+          required: true
+          description: The unique identifier for the product
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A product object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: Product not found
+        '500':
+          description: Server error
+
+components:
+  schemas:
+    ProductResponse:
+      type: object
+      properties:
+        productID:
+          type: string
+          description: The unique identifier for the product
+        name:
+          type: string
+          description: The name of the product
+        description:
+          type: string
+          description: The description of the product
+        price:
+          type: number
+          format: float
+          description: The price of the product
+      required:
+        - productID
+        - name
+        - price
