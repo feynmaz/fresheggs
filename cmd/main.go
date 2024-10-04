@@ -9,6 +9,7 @@ import (
 	"github.com/feynmaz/fresheggs/internal/config"
 	"github.com/feynmaz/fresheggs/internal/logger"
 	"github.com/feynmaz/fresheggs/internal/server"
+	"github.com/feynmaz/fresheggs/internal/storage"
 )
 
 func main() {
@@ -22,7 +23,9 @@ func main() {
 	log.SetLevel(cfg.LogLevel)
 	log.Debug().Msgf("config: %#v", cfg)
 
-	v1 := v1.New(log)
+	storage := storage.NewMemory()
+
+	v1 := v1.New(log, storage)
 	s := server.New(cfg, log, v1)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)

@@ -8,11 +8,14 @@ import (
 
 type API struct {
 	logger *logger.Logger
+
+	storage Storage
 }
 
-func New(logger *logger.Logger) *API {
+func New(logger *logger.Logger, storage Storage) *API {
 	return &API{
-		logger: logger,
+		logger:  logger,
+		storage: storage,
 	}
 }
 
