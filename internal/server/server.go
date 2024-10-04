@@ -17,20 +17,13 @@ type Server struct {
 	logger *logger.Logger
 
 	v1 *v1.API
-
-	router *chi.Mux
 }
 
 func New(cfg *config.Config, logger *logger.Logger, v1 *v1.API) *Server {
-	router := chi.NewMux()
-	router.Mount("/api/v1", v1.GetHandler())
-
 	s := &Server{
 		cfg:    cfg,
 		logger: logger,
 		v1:     v1,
-
-		router: router,
 	}
 	return s
 }
@@ -39,12 +32,23 @@ func (s *Server) Run(ctx context.Context) error {
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%v", s.cfg.ServerPort),
 		BaseContext:  func(_ net.Listener) context.Context { return ctx },
-		Handler:      s.router,
+		Handler:      s.getRouter(),
 		ReadTimeout:  s.cfg.ServerReadTimeout,
 		WriteTimeout: s.cfg.ServerWriteTimeout,
 	}
 
 	return srv.ListenAndServe()
+}
+
+func (s *Server) getRouter() *chi.Mux {
+	router := chi.NewMux()
+
+	router.Use(s.RequestID)
+	router.Use(s.LoggerMiddleware)
+
+	router.Mount("/api/v1", s.v1.GetHandler())
+
+	return router
 }
 
 func (s *Server) Shutdown() {

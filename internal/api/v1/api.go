@@ -17,12 +17,5 @@ func New(logger *logger.Logger) *API {
 }
 
 func (api *API) GetHandler() http.Handler {
-	options := ChiServerOptions{
-		Middlewares: []MiddlewareFunc{
-			api.LoggerMiddleware,
-		},
-	}
-	handler := HandlerWithOptions(api, options)
-
-	return handler
+	return Handler(api)
 }
