@@ -8,6 +8,26 @@ import (
 	"github.com/feynmaz/fresheggs/internal/types"
 )
 
+type responseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func NewResponseWriter(w http.ResponseWriter) *responseWriter {
+	return &responseWriter{w, http.StatusOK}
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+	rw.statusCode = code
+	rw.ResponseWriter.WriteHeader(code)
+}
+
+func (rw *responseWriter) Status() int {
+	return rw.statusCode
+}
+
+//
+
 func WriteJSON(w http.ResponseWriter, r *http.Request, response any) {
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(response)

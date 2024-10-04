@@ -26,7 +26,13 @@ func (s *Server) RequestID(next http.Handler) http.Handler {
 
 func (s *Server) LoggerMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		s.logger.Info().Msgf("%s: %s %s", tools.GetRequestID(r), r.Method, r.RequestURI)
-		next.ServeHTTP(w, r)
+		rw := tools.NewResponseWriter(w)
+		next.ServeHTTP(rw, r)
+
+		event := s.logger.Info()
+		if rw.Status() != http.StatusOK {
+			event = s.logger.Warn()
+		}
+		event.Msgf("%s %s | %d [RequestID: %s]", r.Method, r.RequestURI, rw.Status(), tools.GetRequestID(r))
 	})
 }
