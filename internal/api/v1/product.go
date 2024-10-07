@@ -17,7 +17,7 @@ func (api *API) GetProductById(w http.ResponseWriter, r *http.Request, productID
 		return
 	}
 	if product.ProductID == "" {
-		err = types.NewErrNoData(fmt.Sprintf("no product with id %s", productID))
+		err = types.NewErrNotFound(fmt.Sprintf("no product with id %s", productID))
 		tools.WriteError(w, r, err)
 		return
 	}

@@ -44,11 +44,8 @@ func WriteError(w http.ResponseWriter, r *http.Request, err error) {
 	w.Header().Set("Content-Type", "application/json")
 
 	switch err.(type) {
-	case types.ErrNoData, types.ErrBadRequest:
-		resp.StatusCode = http.StatusBadRequest
-
-	case types.ErrUnauthorized:
-		resp.StatusCode = http.StatusUnauthorized
+	case types.ErrNotFound:
+		resp.StatusCode = http.StatusNotFound
 
 	default:
 		resp.StatusCode = http.StatusInternalServerError
