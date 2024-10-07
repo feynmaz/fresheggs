@@ -1,0 +1,30 @@
+services:
+  jaeger:
+    image: harbor.wildberries.ru/docker-hub-proxy/jaegertracing/all-in-one:1.58
+    container_name: jaeger
+    user: "0" # Run as root
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+      SPAN_STORAGE_TYPE: badger
+      BADGER_EPHEMERAL: false
+      BADGER_DIRECTORY_VALUE: /badger/data
+      BADGER_DIRECTORY_KEY: /badger/key
+    ports:
+      - "8000:16686" # Jaeger UI
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+      - "13133:13133" # Health Check
+      - "14268:14268" # Ingest spans via HTTP
+      - "14269:14269" # Service information via HTTP
+    restart: no
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /root/.jaeger/badger:/badger
+    entrypoint: >
+      /bin/sh -c " mkdir -p /badger/data /badger/key && \ chown -R 1000:1000 /badger && \ /go/bin/all-in-one-linux"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider -q http://localhost:14269/ || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
