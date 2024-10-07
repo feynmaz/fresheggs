@@ -10,19 +10,23 @@ import (
 	"github.com/feynmaz/fresheggs/internal/config"
 	"github.com/feynmaz/fresheggs/internal/logger"
 	"github.com/go-chi/chi/v5"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Server struct {
 	cfg    *config.Config
 	logger *logger.Logger
 
+	tracer trace.Tracer
+
 	v1 *v1.API
 }
 
-func New(cfg *config.Config, logger *logger.Logger, v1 *v1.API) *Server {
+func New(cfg *config.Config, logger *logger.Logger, tracer trace.Tracer, v1 *v1.API) *Server {
 	s := &Server{
 		cfg:    cfg,
 		logger: logger,
+		tracer: tracer,
 		v1:     v1,
 	}
 	return s
@@ -37,6 +41,7 @@ func (s *Server) Run(ctx context.Context) error {
 		WriteTimeout: s.cfg.ServerWriteTimeout,
 	}
 
+	s.logger.Info().Msgf("server started on port %d", s.cfg.ServerPort)
 	return srv.ListenAndServe()
 }
 
@@ -44,7 +49,7 @@ func (s *Server) getRouter() *chi.Mux {
 	router := chi.NewMux()
 
 	router.Use(s.RequestID)
-	router.Use(s.LoggerMiddleware)
+	router.Use(s.TelemetryMiddleware)
 
 	router.Mount("/api/v1", s.v1.GetHandler())
 

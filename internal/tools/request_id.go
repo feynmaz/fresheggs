@@ -2,12 +2,14 @@ package tools
 
 import (
 	"net/http"
-
-	"github.com/feynmaz/fresheggs/internal/types"
 )
 
+type RequestIDKeyType string
+
+const RequestIDKeyValue RequestIDKeyType = "X-Request-ID"
+
 func GetRequestID(r *http.Request) string {
-	reqID := r.Context().Value(types.RequestIDKeyValue)
+	reqID := r.Context().Value(RequestIDKeyValue)
 	if s, ok := reqID.(string); ok {
 		return s
 	}
