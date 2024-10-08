@@ -9,6 +9,10 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+var (
+	skipLoggingPaths = []string{"favicon", "debug", "metrics"}
+)
+
 func (s *Server) RequestID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var requestID string
@@ -47,10 +51,12 @@ func (s *Server) TelemetryMiddleware(next http.Handler) http.Handler {
 		)
 
 		// Logging
-		event := s.logger.Info()
-		if rw.Status() != http.StatusOK {
-			event = s.logger.Warn()
+		if !tools.ContainsAny(r.URL.Path, skipLoggingPaths) {
+			event := s.logger.Info()
+			if rw.Status() != http.StatusOK {
+				event = s.logger.Warn()
+			}
+			event.Msgf("%s %s | %d [RequestID: %s]", r.Method, r.RequestURI, rw.Status(), requestID)
 		}
-		event.Msgf("%s %s | %d [RequestID: %s]", r.Method, r.RequestURI, rw.Status(), requestID)
 	})
 }

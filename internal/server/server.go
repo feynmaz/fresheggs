@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/http/pprof"
 
 	v1 "github.com/feynmaz/fresheggs/internal/api/v1"
 	"github.com/feynmaz/fresheggs/internal/config"
@@ -48,9 +49,21 @@ func (s *Server) Run(ctx context.Context) error {
 func (s *Server) getRouter() *chi.Mux {
 	router := chi.NewMux()
 
+	// Middleware
 	router.Use(s.RequestID)
 	router.Use(s.TelemetryMiddleware)
 
+	// Profiler
+	router.HandleFunc("/debug/pprof/", pprof.Index)
+	router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	router.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	router.Handle("/debug/pprof/goroutine", pprof.Handler("goroutine"))
+	router.Handle("/debug/pprof/heap", pprof.Handler("heap"))
+	router.Handle("/debug/pprof/threadcreate", pprof.Handler("threadcreate"))
+	router.Handle("/debug/pprof/block", pprof.Handler("block"))
+
+	// API
 	router.Mount("/api/v1", s.v1.GetHandler())
 
 	return router
